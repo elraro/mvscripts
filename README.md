@@ -1,2 +1,2 @@
 # mvscripts
-Useless scripts for Mediavida.
+A (sort of) collection of useless scripts for Mediavida.
