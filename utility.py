@@ -6,7 +6,7 @@ import requests
 
 def login(user, password):
     browser = RoboBrowser(parser="lxml")
-    browser.open('http://www.mediavida.com/login.php')
+    browser.open('http://m.mediavida.com/login.php')
     login = browser.get_form(class_='full')
     login['name'].value = user
     login['password'].value = password
@@ -37,7 +37,7 @@ def get_porn(subreddit):
     url = data['data']['children'][number]['data']['url']
     res = requests.get(url, params=None, headers=headers)
     soup = BeautifulSoup(res.text, "lxml")
-    
+
     if "gfycat.com" in url:
         message = '[spoiler=NSFW][video]{}[/video][/spoiler]'.format(url)
         return message
