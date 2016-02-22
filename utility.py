@@ -38,6 +38,9 @@ def get_porn(subreddit):
     res = requests.get(url, params=None, headers=headers)
     soup = BeautifulSoup(res.text, "lxml")
 
+    if "tumblr.com" in url:
+        message = '[spoiler=NSFW][img]{}[/img][/spoiler]'.format(url)
+        return message
     if "gfycat.com" in url:
         message = '[spoiler=NSFW][video]{}[/video][/spoiler]'.format(url)
         return message
