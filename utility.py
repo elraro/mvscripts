@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import csv
 import random
 import requests
+import time
+import datetime
 
 
 def login(user, password):
@@ -20,6 +22,26 @@ def post(message, tid, browser):
     mssg = browser.get_form(class_='single')
     mssg['cuerpo'].value = message
     browser.submit_form(mssg)
+
+
+def get_month_text():
+    now = datetime.datetime.now()
+    months = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
+    return months[now.month-1]
+
+
+def get_year():
+    now = datetime.datetime.now()
+    return now.year
+
+
+def new_thread(message, title, category, fid, browser):
+    browser.open('http://www.mediavida.com/foro/post.php?fid={}'.format(fid))
+    thrd = browser.get_form(class_='single')
+    thrd['cuerpo'].value = message
+    thrd['cabecera'].value = title
+    thrd['tag'].value = ""+str(category)
+    browser.submit_form(thrd)
 
 
 def threads(csv_file):
