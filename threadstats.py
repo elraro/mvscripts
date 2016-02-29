@@ -6,14 +6,16 @@ from collections import Counter
 from prettytable import PrettyTable
 import lxml
 
-thread = raw_input("Thread: ")
-type (thread)
-def total_posts_count (total_pages, thread):
-	r = requests.get(thread+"/"+str(total_pages))
-	r.content
-	soup = BeautifulSoup(r.content, "lxml")
-	post_count = soup.find_all("a", {"class": "qn"})
-	return int(post_count[len(post_count)-1].text.replace("#",""))
+thread = input("Thread: ")
+type(thread)
+
+
+def total_posts_count(total_pages, thread):
+    r = requests.get(thread + "/" + str(total_pages))
+    r.content
+    soup = BeautifulSoup(r.content, "lxml")
+    post_count = soup.find_all("a", {"class": "qn"})
+    return int(post_count[len(post_count)-1].text.replace("#", ""))
 
 
 r = requests.get(thread)
@@ -52,12 +54,16 @@ table = PrettyTable(["User", "Posts"])
 table.align["User"] = "l"
 table.padding_width = 1
 
-for key, value in sorted(user_list.items(), key=operator.itemgetter(1), reverse = True):
+for key, value in sorted(
+                        user_list.items(), key=operator.itemgetter(1),
+                        reverse=True):
     cont = cont + 1
     total = total + value
     table.add_row([key, value])
-print (table.get_string(start=0,end=5))
-table = PrettyTable(["Total posts", "Visible Posts", "Hidden Posts", "% Visible","% Hidden"])
+print (table.get_string(start=0, end=5))
+table = PrettyTable(["Total posts", "Visible Posts", "Hidden Posts",
+                    "% Visible", "% Hidden"])
 table.padding_width = 1
-table.add_row([total_posts, total, total_posts - total, (total * 100) / total_posts, ((total_posts - total)*100 / total_posts) ])
+table.add_row([total_posts, total, total_posts - total, (total * 100) /
+              total_posts, ((total_posts - total)*100 / total_posts)])
 print (table)

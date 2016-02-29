@@ -1,6 +1,7 @@
 import utility
 import time
 
+
 def main():
     browser = utility.login("USER", "PASS")
     threads = utility.threads("threads")
