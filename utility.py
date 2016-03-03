@@ -24,10 +24,29 @@ def post(message, tid, browser):
     browser.submit_form(mssg)
 
 
+def get_news():
+    data = []
+    url = 'http://www.mediavida.com/foro/'
+    r = requests.get(url)
+    soup = BeautifulSoup(r.text, "lxml")
+    for ul in soup.find_all('ul', "items small destacados"):
+        for li in ul.find_all('li'):
+            new = (li.text, 'www.mediavida.com'+str(li.find("a")['href']))
+            data.append(new)
+    return data
+
+
+def last_new(last_file):
+    with open(last_file) as fil:
+        last = fil.readlines()
+    return str(last[0].rstrip('\n'))
+
+
 def get_month_text():
     now = datetime.datetime.now()
-    months = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
-    return months[now.month-1]
+    months = ["enero", "febrero", "marzo", "abril", "mayo", "junio",
+              "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
+    return months[now.month - 1]
 
 
 def get_year():
@@ -40,7 +59,7 @@ def new_thread(message, title, category, fid, browser):
     thrd = browser.get_form(class_='single')
     thrd['cuerpo'].value = message
     thrd['cabecera'].value = title
-    thrd['tag'].value = ""+str(category)
+    thrd['tag'].value = "" + str(category)
     browser.submit_form(thrd)
 
 
@@ -56,7 +75,8 @@ def threads(csv_file):
 
 def get_porn(subreddit):
     url = 'https://www.reddit.com/r/{}/.json?limit=100'.format(subreddit)
-    headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:43.0) Gecko/20100101 Firefox/43.0'}
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:43.0) Gecko/20100101 Firefox/43.0'}
     url = requests.get(url, params=None, headers=headers)
     data = url.json()
     number = random.randint(1, 100)
