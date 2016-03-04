@@ -36,10 +36,9 @@ def get_news():
     return data
 
 
-def last_new(last_file):
-    with open(last_file) as fil:
-        last = fil.readlines()
-    return str(last[0].rstrip('\n'))
+def last_new(table):
+    last = table.get(eid=len(table))
+    return last['url']
 
 
 def get_month_text():
