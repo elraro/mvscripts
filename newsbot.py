@@ -5,7 +5,7 @@ import time
 from tinydb import TinyDB, Query
 
 
-bot = telebot.TeleBot("167548704:AAGtgr4oYp5Hq8znW2sGZrkQac75m18jR3c")
+bot = telebot.TeleBot("TOKEN")
 
 
 def main():
