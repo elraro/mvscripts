@@ -3,8 +3,10 @@ from bs4 import BeautifulSoup
 import csv
 import random
 import requests
+import logging
 import time
 import datetime
+from tinydb import TinyDB, Query
 
 
 def login(user, password):
@@ -31,9 +33,47 @@ def get_news():
     soup = BeautifulSoup(r.text, "lxml")
     for ul in soup.find_all('ul', "items small destacados"):
         for li in ul.find_all('li'):
-            new = (li.text, 'www.mediavida.com'+str(li.find("a")['href']))
+            new = (li.text, 'www.mediavida.com' + str(li.find("a")['href']))
             data.append(new)
     return data
+
+
+def get_threads(subforum):
+    db = TinyDB('db.json')
+    table = db.table('dealsbot')
+    url = 'https://www.mediavida.com/foro/{}'.format(subforum)
+    r = requests.get(url)
+    soup = BeautifulSoup(r.text, "lxml")
+    total_pages = soup.find("strong", "paginas")
+    total_pages = int(total_pages.find("a", "last").text)
+    for page in range(1, total_pages + 1):
+        url = 'https://www.mediavida.com/foro/{}/p{}'.format(subforum, page)
+        r = requests.get(url)
+        soup = BeautifulSoup(r.text, "lxml")
+        for a in soup.find_all('a', 'hb'):
+            table.insert({'url': 'https://www.mediavida.com' + a['href']})
+
+
+def scan_first_page(subforum, bot):
+    chat_id = "@mvnews"
+    db = TinyDB('db.json')
+    table = db.table('dealsbot')
+    url = 'https://www.mediavida.com/foro/{}'.format(subforum)
+    try:
+        r = requests.get(url)
+    except:
+        logging.info('Connection Error.')
+        return
+    soup = BeautifulSoup(r.text, "lxml")
+    Thread = Query()
+    for a in soup.find_all('a', 'hb'):
+        href = 'https://www.mediavida.com' + a['href']
+        result = table.search(Thread.url == href)
+        if not result:
+            table.insert({'url': href})
+            logging.info('New deal: '+href)
+            text = ('[{}]' + '({})').format(a.text, href)
+            bot.send_message(chat_id, text, parse_mode='Markdown')
 
 
 def last_new(table):
