@@ -15,7 +15,7 @@ def total_posts_count(total_pages, thread):
     r.content
     soup = BeautifulSoup(r.content, "lxml")
     post_count = soup.find_all("a", {"class": "qn"})
-    return int(post_count[len(post_count)-1].text.replace("#", ""))
+    return int(post_count[len(post_count) - 1].text.replace("#", ""))
 
 
 r = requests.get(thread)
@@ -40,11 +40,11 @@ for i in range(int(total_pages)):
                 user_list[name.text] = posts + 1
     if (i != total_pages):
         if (i == 0):
-            r = requests.get(thread+"/"+str(i+2))
+            r = requests.get(thread + "/" + str(i + 2))
             r.content
             soup = BeautifulSoup(r.content)
         else:
-            r = requests.get(thread+"/"+str(i+1))
+            r = requests.get(thread + "/" + str(i + 1))
             r.content
             soup = BeautifulSoup(r.content)
 
@@ -55,15 +55,15 @@ table.align["User"] = "l"
 table.padding_width = 1
 
 for key, value in sorted(
-                        user_list.items(), key=operator.itemgetter(1),
-                        reverse=True):
+        user_list.items(), key=operator.itemgetter(1),
+        reverse=True):
     cont = cont + 1
     total = total + value
     table.add_row([key, value])
-print (table.get_string(start=0, end=5))
+print(table.get_string(start=0, end=5))
 table = PrettyTable(["Total posts", "Visible Posts", "Hidden Posts",
-                    "% Visible", "% Hidden"])
+                     "% Visible", "% Hidden"])
 table.padding_width = 1
 table.add_row([total_posts, total, total_posts - total, (total * 100) /
-              total_posts, ((total_posts - total)*100 / total_posts)])
-print (table)
+               total_posts, ((total_posts - total) * 100 / total_posts)])
+print(table)

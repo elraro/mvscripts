@@ -5,7 +5,8 @@ import time
 from tinydb import TinyDB, Query
 
 
-bot = telebot.TeleBot("TOKEN")
+bot = telebot.TeleBot("167548704:AAGtgr4oYp5Hq8znW2sGZrkQac75m18jR3c")
+
 
 def main():
     db = TinyDB('db.json')
@@ -16,13 +17,12 @@ def main():
         except:
             news = []
         last = utility.last_new(table)
-        pos = 0
         for i, (title, url) in enumerate(news):
             if last in url:
                 del news[i:]
         if news:
             chat_id = "@mvnews"
-            table.insert({'url':str(news[0][1])})
+            table.insert({'url': str(news[0][1])})
             for n in news:
                 text = ('[{}]' + '({})').format(n[0], n[1])
                 bot.send_message(chat_id, text, parse_mode='Markdown')
