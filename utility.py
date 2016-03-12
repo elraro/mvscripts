@@ -7,6 +7,7 @@ import logging
 import time
 import datetime
 from tinydb import TinyDB, Query
+import MySQLdb
 
 
 def login(user, password):
@@ -39,8 +40,9 @@ def get_news():
 
 
 def get_threads(subforum):
-    db = TinyDB('db.json')
-    table = db.table('dealsbot')
+    db = MySQLdb.connect(host="localhost", user="root",
+                         passwd="root", db="deals")
+    query = db.cursor()
     url = 'https://www.mediavida.com/foro/{}'.format(subforum)
     r = requests.get(url)
     soup = BeautifulSoup(r.text, "lxml")
@@ -51,13 +53,20 @@ def get_threads(subforum):
         r = requests.get(url)
         soup = BeautifulSoup(r.text, "lxml")
         for a in soup.find_all('a', 'hb'):
-            table.insert({'url': 'https://www.mediavida.com' + a['href']})
+            query.execute("""SELECT url FROM threads WHERE url = %s""",
+                          ('https://www.mediavida.com' + a['href'],))
+            if query.fetchone() == None:
+                query.execute("""INSERT INTO threads (url) VALUES (%s)""",
+                              ('https://www.mediavida.com' + a['href'],))
+                db.commit()
+    db.close()
 
 
 def scan_first_page(subforum, bot):
+    db = MySQLdb.connect(host="localhost", user="root",
+                         passwd="root", db="deals")
+    query = db.cursor()
     chat_id = "@mvnews"
-    db = TinyDB('db.json')
-    table = db.table('dealsbot')
     url = 'https://www.mediavida.com/foro/{}'.format(subforum)
     try:
         r = requests.get(url)
@@ -65,13 +74,15 @@ def scan_first_page(subforum, bot):
         logging.info('Connection Error.')
         return
     soup = BeautifulSoup(r.text, "lxml")
-    Thread = Query()
     for a in soup.find_all('a', 'hb'):
         href = 'https://www.mediavida.com' + a['href']
-        result = table.search(Thread.url == href)
-        if not result:
-            table.insert({'url': href})
-            logging.info('New deal: '+href)
+        query.execute("""SELECT url FROM threads WHERE url = %s""",
+                      ('https://www.mediavida.com' + a['href'],))
+        if query.fetchone() == None:
+            query.execute("""INSERT INTO threads (url) VALUES (%s)""",
+                          ('https://www.mediavida.com' + a['href'],))
+            db.commit()
+            logging.info('New deal: ' + href)
             text = ('[{}]' + '({})').format(a.text, href)
             bot.send_message(chat_id, text, parse_mode='Markdown')
 

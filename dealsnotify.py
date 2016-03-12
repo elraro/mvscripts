@@ -3,6 +3,7 @@ import time
 import logging
 import telebot
 from logging.handlers import RotatingFileHandler
+import MySQLdb
 
 bot = telebot.TeleBot("TOKEN")
 
