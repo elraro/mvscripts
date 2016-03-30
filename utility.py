@@ -27,6 +27,14 @@ def post(message, tid, browser):
     browser.submit_form(mssg)
 
 
+def post_group(message, link, gname, browser):
+    browser.open('http://www.mediavida.com/g/{}'.format(gname))
+    mssg = browser.get_form(action='/grupos/avisos_nuevo.php')
+    mssg['texto'].value = message
+    mssg['link'].value = link
+    browser.submit_form(mssg)
+
+
 def get_news():
     data = []
     url = 'http://www.mediavida.com/foro/'
